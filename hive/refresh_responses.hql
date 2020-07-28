@@ -3,6 +3,8 @@ create table awight.template_survey_responses as
 select
   dt,
   wiki,
+  event.editCountBucket,
+  event.isLoggedIn,
   event.surveyCodeName,
   event.surveyResponseValue
 from event.quicksurveysresponses
@@ -18,7 +20,9 @@ create table awight.template_survey_flat_answers as
 select
     dt,
     substring(surveycodename, -1) as group_no,
-    answer
+    regexp_extract(answer, '-([^-]+)$', 1) as answer,
+    editcountbucket,
+    isloggedin
 from awight.template_survey_responses
     lateral view explode(split(surveyresponsevalue, ',')) response_table as answer;
 
